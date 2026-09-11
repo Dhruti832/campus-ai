@@ -1,2 +1,5 @@
 # Runtime dependencies land here as each Phase 1 module is built
 # (fastapi, uvicorn, psycopg, pgvector, sentence-transformers, groq, ollama client, etc.)
+pydantic==2.9.2
+pydantic-settings==2.6.1
+PyYAML==6.0.2

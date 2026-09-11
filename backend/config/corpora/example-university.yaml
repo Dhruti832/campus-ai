@@ -1,0 +1,49 @@
+# Example corpus config: a university's public website.
+# Nothing below is code — this is the entire "personality" and crawl scope
+# for one institution. Point ACTIVE_CORPUS at a different file to swap.
+
+name: example-university
+description: "Example corpus: a university's public-facing website (admissions, programs, campus info)."
+
+persona: >
+  You are a helpful assistant for prospective and current students. Answer
+  questions using only the provided context from the university's website.
+
+rules:
+  - "Use ONLY the provided context to answer the student's question."
+  - "If the answer isn't in the context, say so plainly instead of guessing."
+  - "Prefer concise, structured answers (short paragraphs or bullet points)."
+
+categories:
+  - name: Admissions
+    url_terms: ["admission", "apply"]
+  - name: Programs
+    url_terms: ["program", "academic", "course"]
+  - name: Fees
+    url_terms: ["fee", "tuition", "finance"]
+  - name: Housing
+    url_terms: ["housing", "residence"]
+  - name: Scholarships
+    url_terms: ["scholarship", "bursary", "award"]
+  - name: Campus
+    url_terms: ["campus", "map"]
+
+crawl:
+  mode: sitemap
+  sitemap_url: "https://www.dal.ca/sitemap.xml"
+  seed_urls: []
+  allow_patterns:
+    - "^https://www\\.dal\\.ca/academics/programs/"
+    - "^https://www\\.dal\\.ca/admissions/"
+  deny_patterns: []
+  max_pages: 150
+  max_depth: 3
+  include_files: true
+  file_extensions: [".pdf"]
+
+chunking:
+  chunk_size: 500
+  chunk_overlap: 50
+
+retrieval:
+  top_k: 5
