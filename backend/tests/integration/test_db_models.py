@@ -16,6 +16,7 @@ pytestmark = pytest.mark.integration
 @pytest.fixture(autouse=True)
 def _cleanup(db_session):
     yield
+    db_session.rollback()
     db_session.execute(delete(Chunk).where(Chunk.chunk_text.like("test-chunk-%")))
     db_session.execute(delete(Source).where(Source.corpus == "test-corpus"))
     db_session.commit()
