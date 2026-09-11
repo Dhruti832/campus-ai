@@ -2,8 +2,8 @@
 
 > A generic, config-driven RAG (Retrieval-Augmented Generation) chatbot: point it at a sitemap or a set of seed URLs, and chat with that content. Built with a free, self-hostable stack end to end.
 
-[![Backend CI](https://github.com/REPLACE_ME/docuchat/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/REPLACE_ME/docuchat/actions/workflows/backend-ci.yml)
-[![Frontend CI](https://github.com/REPLACE_ME/docuchat/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/REPLACE_ME/docuchat/actions/workflows/frontend-ci.yml)
+[![Backend CI](https://github.com/Dhruti832/docuchat/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/Dhruti832/docuchat/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/Dhruti832/docuchat/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/Dhruti832/docuchat/actions/workflows/frontend-ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Status:** Backend + frontend MVP complete and verified end to end locally (real crawl → chunk → embed → pgvector retrieval → LLM → chat UI, all tested). Not yet deployed publicly — live demo link lands here once it's on Render/Vercel/Neon.
