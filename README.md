@@ -6,13 +6,15 @@
 [![Frontend CI](https://github.com/REPLACE_ME/docuchat/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/REPLACE_ME/docuchat/actions/workflows/frontend-ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Status:** 🚧 Under active development (Phase 1 MVP in progress). Live demo link and screenshots will be added here once deployed.
+**Status:** Backend + frontend MVP complete and verified end to end locally (real crawl → chunk → embed → pgvector retrieval → LLM → chat UI, all tested). Not yet deployed publicly — live demo link lands here once it's on Render/Vercel/Neon.
+
+![DocuChat answering a question with source citations](docs/screenshots/chat-demo.png)
 
 ---
 
 ## What this is
 
-DocuChat crawls a website (or a fixed list of pages), chunks and embeds the content, stores it in Postgres with `pgvector`, and answers natural-language questions about it using retrieval-augmented generation. The active "corpus" (what site/domain it knows about, its persona, its category rules) is entirely config-driven — swapping to a new knowledge base means pointing at a different YAML file, never editing code.
+DocuChat crawls a website (or a fixed list of pages), chunks and embeds the content, stores it in Postgres with `pgvector`, and answers natural-language questions about it using retrieval-augmented generation. The active "corpus" (what site/domain it knows about, its persona, its category rules) is entirely config-driven — swapping to a new knowledge base means pointing at a different YAML file, never editing code. The screenshot above, for example, is DocuChat pointed at FastAPI's own docs site via [`backend/config/corpora/example-docs.yaml`](backend/config/corpora/example-docs.yaml); pointing `ACTIVE_CORPUS` at [`example-university.yaml`](backend/config/corpora/example-university.yaml) instead gives you a completely different bot — different persona, different category labels, different crawl scope — with no code changes.
 
 ## Why this exists
 
@@ -35,21 +37,52 @@ RAG orchestration (chunking, retrieval, prompting) is hand-rolled rather than bu
 ## Quickstart (local, $0)
 
 ```bash
+# 1. Start Postgres+pgvector, Ollama, the backend, and the frontend
 docker compose -f infra/docker-compose.yml up --build
+
+# 2. Pull a small local model for Ollama (one-time)
+docker exec -it infra-ollama-1 ollama pull phi3
+
+# 3. Ingest a corpus (crawls, chunks, embeds, and stores it in Postgres)
+python scripts/ingest.py --corpus example-docs
+
+# 4. Open the chat UI
+# http://localhost:3000
 ```
 
-*(Full instructions land here once the ingestion/backend/frontend pieces are built — see project status above.)*
+Prefer running the backend outside Docker for faster iteration? `cd backend && pip install -r requirements-dev.txt && uvicorn app.main:app --reload` (point `DATABASE_URL` at `docker compose up postgres` and set `ACTIVE_CORPUS`). Same idea for the frontend: `cd frontend && npm install && npm run dev`.
 
 ## Project structure
 
 ```
 docuchat/
-├── backend/     # FastAPI app: ingestion, embeddings, retrieval, LLM providers, chat agent
-├── frontend/    # Next.js chat UI
-├── infra/       # docker-compose + DB init scripts
-├── docs/        # architecture notes and ADRs
-└── scripts/     # ingestion CLI
+├── backend/
+│   ├── app/
+│   │   ├── config.py          # Settings (env) + CorpusConfig (per-institution YAML)
+│   │   ├── db/                # SQLAlchemy models + session factory
+│   │   ├── ingestion/         # crawler, extractor, chunker, ingest_service
+│   │   ├── embeddings/        # lazy-loaded sentence-transformers wrapper
+│   │   ├── retrieval/         # pgvector search, Postgres FTS, orchestration
+│   │   ├── llm/                # Provider protocol + Ollama/Groq + prompt builder
+│   │   ├── agent/              # chat_engine.py — retrieve/prompt/generate/fallback
+│   │   └── routes/             # FastAPI /chat, /health
+│   ├── config/corpora/         # per-institution YAML — DATA, not code
+│   └── tests/{unit,integration}/
+├── frontend/                   # Next.js chat UI (App Router, TypeScript, Tailwind)
+├── infra/                      # docker-compose + pgvector init SQL
+├── docs/                       # architecture.md, ADRs, screenshots
+└── scripts/ingest.py           # CLI: crawl -> chunk -> embed -> store one corpus
 ```
+
+## What I fixed vs. a naive RAG implementation
+
+The original project (private, university course work) worked, but had three real issues this rebuild fixes:
+
+1. **Vector search anti-pattern.** Embeddings were stored as JSON text in a MySQL `TEXT` column. Every query fetched *every* chunk's embedding out of the database (no `LIMIT`, no vector index) and computed cosine similarity in a Python `for` loop. This version uses Postgres + `pgvector` with a real HNSW index: `ORDER BY embedding <=> :query LIMIT :k` — a single indexed query, proven in [`tests/integration/test_vector_store.py`](backend/tests/integration/test_vector_store.py) against a real database.
+2. **Domain hardcoding.** Institution-specific logic (navigation data, keyword sets, URL category rules, the system prompt itself) was written directly into the orchestration code. Here it all lives in [`backend/config/corpora/*.yaml`](backend/config/corpora/) — swapping institutions is a config change, never a code change.
+3. **Repo hygiene.** Stray log/coverage files were committed at the repo root and `pytest` broke when run from the root. This repo has had a correct `.gitignore` and `testpaths` since commit #1, enforced by a 90% coverage gate on both backend and frontend from day one.
+
+A real-database benchmark note (chunk count, query latency) will land here once the corpus grows past a trivial size in the deployed demo.
 
 ## License
 
