@@ -1,0 +1,2 @@
+# Runtime dependencies land here as each Phase 1 module is built
+# (fastapi, uvicorn, psycopg, pgvector, sentence-transformers, groq, ollama client, etc.)

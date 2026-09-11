@@ -1,0 +1,13 @@
+{
+  "name": "docuchat-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "jest --coverage",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^9.15.0"
+  }
+}
