@@ -15,6 +15,22 @@ defaults:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: unichat
+          POSTGRES_PASSWORD: unichat
+          POSTGRES_DB: unichat
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U unichat -d unichat"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://unichat:unichat@localhost:5432/unichat
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +42,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
+
+      - name: Apply DB schema
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          PGPASSWORD=unichat psql -h localhost -U unichat -d unichat -f ../infra/init-db/001_enable_pgvector.sql
 
       - name: Lint
         run: ruff check .
