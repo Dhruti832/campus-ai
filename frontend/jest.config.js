@@ -1,7 +1,15 @@
+const nextJest = require("next/jest");
+
+const createJestConfig = nextJest({ dir: "./" });
+
 /** @type {import('jest').Config} */
-module.exports = {
-  testEnvironment: "node",
-  collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
+const customJestConfig = {
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
+  collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}", "!src/app/layout.tsx"],
   coverageThreshold: {
     global: {
       lines: 90,
@@ -11,3 +19,5 @@ module.exports = {
     },
   },
 };
+
+module.exports = createJestConfig(customJestConfig);
