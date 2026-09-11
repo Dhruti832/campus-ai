@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 markers = [
     "unit: mark a test as a unit test",
     "integration: mark a test as an integration test (requires a real Postgres)",
