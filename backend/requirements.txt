@@ -1,0 +1,27 @@
+# Runtime dependencies land here as each Phase 1 module is built
+# (fastapi, uvicorn, psycopg, pgvector, onnxruntime, groq, ollama client, etc.)
+pydantic==2.9.2
+pydantic-settings==2.6.1
+PyYAML==6.0.2
+SQLAlchemy==2.0.36
+psycopg[binary]==3.2.3
+pgvector==0.3.6
+# Bare onnxruntime + tokenizers, not sentence-transformers: the latter
+# unconditionally imports torch regardless of backend choice (~370MB just
+# to import), which is most of why the service OOM'd on Render's 512MB
+# free tier. This hand-rolled tokenize -> ONNX forward pass -> mean-pool
+# -> L2-normalize pipeline is mathematically identical to sentence-
+# transformers' all-MiniLM-L6-v2 (verified: cosine similarity 1.0 against
+# the same model weights) at roughly half the peak memory. See the
+# free-tier memory constraint note in README.md.
+onnxruntime==1.30.0
+tokenizers==0.22.2
+numpy==2.3.5
+requests==2.32.3
+beautifulsoup4==4.12.3
+pypdf==5.1.0
+python-docx==1.1.2
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+slowapi==0.1.9
+APScheduler==3.10.4

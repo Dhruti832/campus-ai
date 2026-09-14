@@ -1,0 +1,49 @@
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*_out.txt
+*_output.txt
+pytest_out.txt
+test_fail.txt
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+next-env.d.ts
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Data / local artifacts (never commit crawled content or model files) ---
+/backend/data/
+/backend/models/
+*.db
+*.sqlite3
+
+# --- Playwright (e2e/) ---
+/e2e/playwright-report/
+/e2e/test-results/
+/e2e/.cache/

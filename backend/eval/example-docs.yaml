@@ -1,0 +1,40 @@
+# Labeled retrieval eval set for the example-docs corpus (FastAPI's own
+# docs site). Each entry's relevant_urls are the source pages that should
+# come back for that query, hand-picked against what's actually ingested —
+# see `docker exec ... psql -c "SELECT url FROM sources WHERE corpus = ..."`
+# to regenerate this list if the crawl scope in example-docs.yaml changes.
+#
+# Run: python scripts/eval_retrieval.py --corpus example-docs
+queries:
+  - query: "How do I deploy a FastAPI app?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/deployment
+
+  - query: "How do I write my first path operation function?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/tutorial/first-steps
+
+  - query: "What are dependencies and how do I declare them?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/tutorial/dependencies
+
+  - query: "What are sub-dependencies?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies
+
+  - query: "How does FastAPI handle async and await?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/async
+
+  - query: "Which code editors does FastAPI support?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/editor-support
+
+  - query: "Where should I start learning FastAPI as a beginner?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/tutorial
+      - https://fastapi.tiangolo.com/tutorial/first-steps
+
+  - query: "What is concurrency in the context of FastAPI?"
+    relevant_urls:
+      - https://fastapi.tiangolo.com/async
